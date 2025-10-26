@@ -17,9 +17,12 @@ https://medium.com/@perez_vitor/o-que-%C3%A9-flyway-e-por-que-usa-lo-com-java-e-
 ✅- `Candidato` (JPA):  
   id (UUID), nome, cpf, email, telefone, dataNascimento,  
   areaInteresse, experienciaAnos (>=0), pretensaoSalarial (>=0),  
-  status (enum),
-[]criadoEm, atualizadoEm
+  status (enum)
+  
+[ ] criadoEm, atualizadoEm
+
 ✅ Enum `StatusCandidato`: `CANDIDATO`, `TRIAGEM`, `APROVADO`, `REPROVADO`
+
 [ ] Auditar `criadoEm/atualizadoEm` (via `@PrePersist/@PreUpdate` ou Envers/Listeners)
 
 **DoD:** Entidade mapeada, compila, e persiste um registro de teste.
