@@ -1,4 +1,8 @@
 package com.RHgroup.CadastrosRH.model;
 
-public class StatusCandidato {
+public enum StatusCandidato {
+    CANDIDATO,
+    TRIAGEM,
+    APROVADO,
+    REPROVADO
 }
