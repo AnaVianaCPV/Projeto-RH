@@ -26,13 +26,13 @@ com todos argumentos sem precisar escrever*/
 public class Candidato {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
     @Column (nullable = false)
     private String nome;
 
-    @Column (nullable = false, unique= true, length=11)
+    @Column(name = "cpf", length = 11, nullable = false, unique = true)
     private String cpf;
 
     private LocalDate dataNascimento;
