@@ -11,8 +11,8 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.RHgroup</groupId>
-    <artifactId>CadastrosRH</artifactId>
+    <groupId>com.rhgroup</groupId>
+    <artifactId>cadastrosrh</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>CadastrosRH</name>
     <description>API de RH - Fase 1: Candidatos</description>
@@ -55,6 +55,11 @@
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-core</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
         </dependency>
 
         <dependency>
@@ -122,4 +127,5 @@
 
         </plugins>
     </build>
+
 </project>
