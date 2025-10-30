@@ -12,15 +12,11 @@ import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
-/*todos do lombok, inserem automáticamente os Getters, Setters pra quando formos usar em
-outras classes. Insere também Construtor vazio e Construtor
-com todos argumentos sem precisar escrever*/
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 
-// mapeia a classe para o banco de dados
 @Entity
 @Table(name= "candidatos")
 
@@ -53,7 +49,7 @@ public class Candidato {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private StatusCandidato status;
+    private StatusCandidato status; // Tipo correto: StatusCandidato
 
 
     // Campos de auditoria
@@ -63,7 +59,6 @@ public class Candidato {
     @Column(name = "atualizado_em")
     private LocalDateTime atualizadoEm;
 
-    //Atualiza automaticamente as datas
     @PrePersist
     public void aoCriar() {
         this.criadoEm = LocalDateTime.now();
@@ -73,7 +68,8 @@ public class Candidato {
     @PreUpdate
     public void aoAtualizar() {
         this.atualizadoEm = LocalDateTime.now();
-
-
     }
+
+    // **A LINHA ABAIXO FOI REMOVIDA PARA CORRIGIR O ERRO:**
+    // public void setStatus(String ativo) {}
 }

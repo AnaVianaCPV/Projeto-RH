@@ -4,5 +4,9 @@ public enum StatusCandidato {
     CANDIDATO,
     TRIAGEM,
     APROVADO,
-    REPROVADO
+    REPROVADO,
+
+    // Novos status adicionados para compatibilidade com o teste:
+    ATIVO,
+    EM_ENTREVISTA
 }
