@@ -1,9 +1,9 @@
 # ✅ To-Do Checklist – RH API (Spring Boot + PostgreSQL) – Fase 1: Candidatos
 
-
-##✅ 1) Banco & Migrações (Flyway)
+✅ Feito
+## 1) Banco & Migrações (Flyway)
 https://medium.com/@perez_vitor/o-que-%C3%A9-flyway-e-por-que-usa-lo-com-java-e-spring-312219ebf840
-✅ Criar `V1__create_table_candidatos.sql` com tabela, índices e constraints
+ Criar `V1__create_table_candidatos.sql` com tabela, índices e constraints
 - Habilitar UUID (se usar `uuid_generate_v4()` ou usar `@GeneratedValue` com UUID)
 - Constraints: `email` **UNIQUE**, `cpf` **UNIQUE**
 - Índices: `nome`, `status`
@@ -12,16 +12,14 @@ https://medium.com/@perez_vitor/o-que-%C3%A9-flyway-e-por-que-usa-lo-com-java-e-
 **DoD:** Banco `rhdb` com tabela `candidatos` criada via Flyway sem erro.
 
 ---
-
+✅ Feito
 ## 2) Modelo de Domínio (Entity) + Enums
-✅- `Candidato` (JPA):  
+- `Candidato` (JPA):  
   id (UUID), nome, cpf, email, telefone, dataNascimento,  
   areaInteresse, experienciaAnos (>=0), pretensaoSalarial (>=0),  
-
   status (enum), criadoEm, atualizadoEm
-✅ Enum `StatusCandidato`: `CANDIDATO`, `TRIAGEM`, `APROVADO`, `REPROVADO`
-✅Auditar `criadoEm/atualizadoEm` (via `@PrePersist/@PreUpdate` ou Envers/Listeners)
-
+ Enum `StatusCandidato`: `CANDIDATO`, `TRIAGEM`, `APROVADO`, `REPROVADO`
+Auditar `criadoEm/atualizadoEm` (via `@PrePersist/@PreUpdate` ou Envers/Listeners)
 
 **DoD:** Entidade mapeada, compila, e persiste um registro de teste.
 
@@ -67,7 +65,7 @@ Implementar mapper (MapStruct ou manual) para:
 **DoD:** Casos de conflito retornam **409 Conflict**; regras cobertas por testes de service.
 
 ---
-
+✅ Feito
 ## 7) API REST (Controller) – Endpoints Obrigatórios
 - `GET /candidatos` – paginação, sort, filtros
 - `GET /candidatos/{id}` – 200 ou 404
@@ -80,7 +78,7 @@ Implementar mapper (MapStruct ou manual) para:
 **DoD:** Todos os endpoints respondem conforme especificado; testados com cURL/Insomnia/Postman.
 
 ---
-
+✅ Feito
 ## 8) Tratamento de Erros (padrão)
 - `@ControllerAdvice` com **RFC 7807 (Problem Details)**  
   Campos: `type`, `title`, `status`, `detail`, `timestamp`, `fields[]`
