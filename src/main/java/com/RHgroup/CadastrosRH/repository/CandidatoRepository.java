@@ -34,6 +34,8 @@ public interface CandidatoRepository extends JpaRepository<Candidato, UUID>,
      */
     Page<Candidato> findByStatus(StatusCandidato status, Pageable pageable);
 
+    boolean existsByCpf(String cpf);
+    boolean existsByEmail(String email);
     /**
      * Busca candidatos com experiência dentro de uma faixa especificada com paginação.
      * Usando Pageable para o retorno paginado.
