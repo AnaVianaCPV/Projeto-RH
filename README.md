@@ -24,7 +24,7 @@ Auditar `criadoEm/atualizadoEm` (via `@PrePersist/@PreUpdate` ou Envers/Listener
 **DoD:** Entidade mapeada, compila, e persiste um registro de teste.
 
 ---
-
+✅ Feito
 ## 3) DTOs & Validações (Bean Validation)
 - `CandidatoCreateDTO` (POST) – regras: nome (3–120), cpf (formato BR), email (válido), experienciaAnos >= 0, pretensaoSalarial >= 0
 - `CandidatoUpdateDTO` (PUT) – todos os campos necessários (substituição total)
@@ -35,7 +35,7 @@ Auditar `criadoEm/atualizadoEm` (via `@PrePersist/@PreUpdate` ou Envers/Listener
 **DoD:** Requests inválidos recebem **400** com mensagens claras de campo.
 
 ---
-
+✅ Feito
 ## 4) Mapper (DTO ↔ Entity)
 Implementar mapper (MapStruct ou manual) para:
 - CreateDTO → Entity
@@ -45,7 +45,7 @@ Implementar mapper (MapStruct ou manual) para:
 **DoD:** Conversões corretas cobertas por testes unitários simples.
 
 ---
-
+✅ Feito
 ## 5) Camada de Acesso a Dados
 - `CandidatoRepository` (`JpaRepository<Candidato, UUID>`)
 - Consultas de filtro (por `nome`, `email`, `status`, faixa de `experienciaAnos`) – `Example`, `@Query` ou `Specification`
@@ -53,7 +53,7 @@ Implementar mapper (MapStruct ou manual) para:
 **DoD:** Filtros funcionando com testes de repositório (mínimo).
 
 ---
-
+✅ Feito
 ## 6) Regras de Negócio (Service)
 - Salvar com validações: **CPF único**, **email único**
 - Buscar por ID com **404** se não existir
@@ -98,7 +98,7 @@ Implementar mapper (MapStruct ou manual) para:
 **DoD:** Swagger completo e legível; time consegue testar por ali.
 
 ---
-
+ @ Em Progresso
 ## 10) Testes
 - **Unitários**: service, mapper, validações
 - **(Opcional)** Integração com **Testcontainers (Postgres)**
@@ -126,8 +126,15 @@ Implementar mapper (MapStruct ou manual) para:
 **DoD:** Roteiro de testes funciona ponta a ponta.
 
 -
+## 🔒13) Camada de Segurança (Autenticação)
+- 	**Item de Segurança**	   Status<br>
+13.1	Configuração Spring Security	✅ Feito<br>
+13.2	Modelo de Usuário	✅ Feito<br>
+13.3	Serviço de Usuário	✅ Feito<br>
+13.4	Regras de Acesso	✅ Feito<br>
+13.5	Testes de Segurança	✅ Feito
 
-## 13) Extras (se der tempo)
+## 14) Extras (se der tempo)
 - **Filtro avançado** (faixa salarial, data de nascimento)
 - **Upload de currículo** (armazenamento local/S3)
 - **Autenticação (Basic Auth)** para rotas de escrita
