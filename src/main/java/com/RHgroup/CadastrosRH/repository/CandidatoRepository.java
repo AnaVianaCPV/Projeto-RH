@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
 import java.util.UUID;
 
@@ -16,40 +17,26 @@ import java.util.UUID;
 public interface CandidatoRepository extends JpaRepository<Candidato, UUID>,
         JpaSpecificationExecutor<Candidato> {
 
-    // --- Consultas de Filtro Adaptadas com Pageable ---
-
-    /**
-     * Busca candidatos por nome contendo o termo (case-insensitive) com paginação.
-     */
-    Page<Candidato> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
-
-    /**
-     * Busca candidatos por e-mail exato com paginação.
-     */
-    Page<Candidato> findByEmail(String email, Pageable pageable);
-
-    /**
-     * Busca candidatos por status (Enum) com paginação.
-     * Note que agora estamos usando o StatusCandidato do seu modelo.
-     */
-    Page<Candidato> findByStatus(StatusCandidato status, Pageable pageable);
-
+    // --- Métodos para Validação de Unicidade ---
     boolean existsByCpf(String cpf);
     boolean existsByEmail(String email);
+
+    // --- Método para Spring Security (retorna um único Candidato por email) ---
     /**
-     * Busca candidatos com experiência dentro de uma faixa especificada com paginação.
-     * Usando Pageable para o retorno paginado.
+     * Busca um candidato por email, usado pelo Spring Security.
      */
+    Optional<Candidato> findByEmail(String email);
+
+    // --- Consultas de Filtro Adaptadas com Pageable ---
+    Page<Candidato> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+
+    // Método para busca paginada (o Spring distingue este do Optional<Candidato>)
+    Page<Candidato> findByEmail(String email, Pageable pageable);
+
+    Page<Candidato> findByStatus(StatusCandidato status, Pageable pageable);
+
     @Query("SELECT c FROM Candidato c WHERE c.experienciaAnos BETWEEN :min AND :max")
     Page<Candidato> findByExperienciaAnosBetween(@Param("min") int min,
                                                  @Param("max") int max,
                                                  Pageable pageable);
-
-    // --- Uso do JpaSpecificationExecutor ---
-
-    // Não precisamos de métodos de filtro combinados aqui!
-    // O método 'findAll(Specification<T> spec, Pageable pageable)'
-    // herdado de JpaSpecificationExecutor já suporta a combinação
-    // de *TODOS* os filtros do seu Controller (nome, email, status, faixa de exp.)
-    // de forma dinâmica, além da paginação.
 }
