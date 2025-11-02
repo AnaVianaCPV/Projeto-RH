@@ -38,19 +38,21 @@ class CandidatoRepositoryTest {
         // Limpar antes de cada teste para garantir isolamento
         repository.deleteAll();
 
+        //  Adicionado o argumento de senha (6º)
         candidatoBase = new Candidato(
-                null,
-                "João Teste",
-                "11122233344",
-                LocalDate.of(1990, 1, 1),
-                "joao.teste@repo.com",
-                "99887766",
-                "Backend Java",
-                5,
-                new BigDecimal("6000.00"),
-                StatusCandidato.ATIVO,
-                null, // PrePersist cuida disso
-                null  // PrePersist cuida disso
+                null,                           // 1. id
+                "João Teste",                   // 2. nome
+                "11122233344",                  // 3. cpf
+                LocalDate.of(1990, 1, 1),       // 4. dataNascimento
+                "joao.teste@repo.com",          // 5. email
+                "senha123",                     // 6. **senha (ADICIONADO)**
+                "99887766",                     // 7. celular
+                "Backend Java",                 // 8. areaInteresse
+                5,                              // 9. experienciaAnos
+                new BigDecimal("6000.00"),      // 10. pretensaoSalarial
+                StatusCandidato.ATIVO,          // 11. status
+                null,                           // 12. criadoEm
+                null                            // 13. atualizadoEm
         );
         pageable = PageRequest.of(0, 10);
 
@@ -63,18 +65,21 @@ class CandidatoRepositoryTest {
     @Test
     void save_DevePersistirCandidatoComSucesso() {
         // Arrange
+        // Adicionado o argumento de senha (6º)
         Candidato novoCandidato = new Candidato(
-                null,
-                "Maria Nova",
-                "55566677788",
-                LocalDate.of(1995, 5, 5),
-                "maria.nova@repo.com",
-                "11223344",
-                "Frontend React",
-                2,
-                new BigDecimal("4500.00"),
-                StatusCandidato.CANDIDATO,
-                null, null
+                null,                           // 1. id
+                "Maria Nova",                   // 2. nome
+                "55566677788",                  // 3. cpf
+                LocalDate.of(1995, 5, 5),       // 4. dataNascimento
+                "maria.nova@repo.com",          // 5. email
+                "senha456",                     // 6. **senha (ADICIONADO)**
+                "11223344",                     // 7. celular
+                "Frontend React",               // 8. areaInteresse
+                2,                              // 9. experienciaAnos
+                new BigDecimal("4500.00"),      // 10. pretensaoSalarial
+                StatusCandidato.CANDIDATO,      // 11. status
+                null,                           // 12. criadoEm
+                null                            // 13. atualizadoEm
         );
 
         // Act
@@ -162,13 +167,15 @@ class CandidatoRepositoryTest {
 
     @Test
     void save_DeveLancarExcecao_AoTentarSalvarCPFDuplicado() {
-        // Arrange: Criar um candidato com o mesmo CPF
+        // arranjo(Arrange): Criar um candidato com o mesmo CPF
+        // CORREÇÃO: Adicionado o argumento de senha (6º)
         Candidato duplicado = new Candidato(
                 null,
                 "Candidato Dup",
                 candidatoBase.getCpf(), // Mesmo CPF
                 LocalDate.of(2000, 1, 1),
                 "outro@email.com", // Email diferente, mas o CPF causará o erro
+                "senha123",        // **senha (ADICIONADO)**
                 "123456",
                 "QA",
                 1,

@@ -3,6 +3,8 @@ package com.RHgroup.CadastrosRH.model;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.UUID;
 
 import jakarta.persistence.*;
@@ -11,6 +13,9 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails; // Importante
 
 @Getter
 @Setter
@@ -20,7 +25,8 @@ import lombok.Setter;
 @Entity
 @Table(name= "candidatos")
 
-public class Candidato {
+// Implementa UserDetails
+public class Candidato implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -36,6 +42,10 @@ public class Candidato {
 
     @Column(nullable = false, unique = true)
     private String email;
+
+    // Novo campo para a senha, NUNCA nullable=false, pois usuários antigos podem não ter
+    // Se for um sistema novo, deve ser nullable = false. Para este exemplo, vamos assumir que pode ser nulo se não for um usuário do sistema.
+    private String senha;
 
     private String celular;
 
@@ -70,6 +80,49 @@ public class Candidato {
         this.atualizadoEm = LocalDateTime.now();
     }
 
-    // **A LINHA ABAIXO FOI REMOVIDA PARA CORRIGIR O ERRO:**
-    // public void setStatus(String ativo) {}
+    // ----------------------------------------------------------------------
+    // Implementação de UserDetails
+    // ----------------------------------------------------------------------
+
+    /**
+     * Define as permissões (roles) do usuário.
+     * Estamos definindo uma role fixa 'ROLE_USER' para todos os candidatos.
+     */
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        // Você pode retornar roles mais específicas baseadas em um campo 'role' no Candidato
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return this.senha; // Retorna o campo 'senha'
+    }
+
+    @Override
+    public String getUsername() {
+        return this.email; // Usamos o email como nome de usuário
+    }
+
+    // Métodos de expiração/bloqueio (geralmente retornam true por padrão)
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        // Apenas permite login se o status não for REPROVADO, por exemplo
+        return this.status != StatusCandidato.REPROVADO;
+    }
 }

@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import java.util.Optional;
 
 import java.util.UUID;
 
@@ -17,19 +18,21 @@ public interface CandidatoRepository extends JpaRepository<Candidato, UUID>,
         JpaSpecificationExecutor<Candidato> {
 
     // --- Métodos para Validação de Unicidade ---
-    /**
-     * Verifica se existe um candidato com o CPF fornecido.
-     */
     boolean existsByCpf(String cpf);
-
-    /**
-     * Verifica se existe um candidato com o Email fornecido.
-     */
     boolean existsByEmail(String email);
+
+    // --- Método para Spring Security (retorna um único Candidato por email) ---
+    /**
+     * Busca um candidato por email, usado pelo Spring Security.
+     */
+    Optional<Candidato> findByEmail(String email);
 
     // --- Consultas de Filtro Adaptadas com Pageable ---
     Page<Candidato> findByNomeContainingIgnoreCase(String nome, Pageable pageable);
+
+    // Método para busca paginada (o Spring distingue este do Optional<Candidato>)
     Page<Candidato> findByEmail(String email, Pageable pageable);
+
     Page<Candidato> findByStatus(StatusCandidato status, Pageable pageable);
 
     @Query("SELECT c FROM Candidato c WHERE c.experienciaAnos BETWEEN :min AND :max")
