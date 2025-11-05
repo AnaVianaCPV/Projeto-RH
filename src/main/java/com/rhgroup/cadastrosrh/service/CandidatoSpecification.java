@@ -1,7 +1,7 @@
-package com.RHgroup.CadastrosRH.service;
+package com.rhgroup.cadastrosrh.service;
 
-import com.RHgroup.CadastrosRH.model.Candidato;
-import com.RHgroup.CadastrosRH.model.StatusCandidato;
+import com.rhgroup.cadastrosrh.model.Candidato;
+import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.util.StringUtils;

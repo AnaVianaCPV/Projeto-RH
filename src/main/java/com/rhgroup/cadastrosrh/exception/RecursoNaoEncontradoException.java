@@ -1,4 +1,4 @@
-package com.RHgroup.CadastrosRH.exception;
+package com.rhgroup.cadastrosrh.exception;
 // Embora o Spring Data já lide com Optional.orElseThrow(()
 // -> new NotFoundException()), é bom ter uma explícita.
 

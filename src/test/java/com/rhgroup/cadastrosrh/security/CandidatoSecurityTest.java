@@ -1,9 +1,9 @@
-package com.RHgroup.CadastrosRH;
+package com.rhgroup.cadastrosrh.security;
 
-import com.RHgroup.CadastrosRH.controller.CandidatoController;
-import com.RHgroup.CadastrosRH.model.Candidato;
-import com.RHgroup.CadastrosRH.model.StatusCandidato;
-import com.RHgroup.CadastrosRH.service.CandidatoService;
+import com.rhgroup.cadastrosrh.controller.CandidatoController;
+import com.rhgroup.cadastrosrh.model.Candidato;
+import com.rhgroup.cadastrosrh.model.StatusCandidato;
+import com.rhgroup.cadastrosrh.service.CandidatoService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito; // Importação do Mockito

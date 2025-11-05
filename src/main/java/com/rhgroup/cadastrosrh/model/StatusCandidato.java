@@ -1,4 +1,4 @@
-package com.RHgroup.CadastrosRH.model;
+package com.rhgroup.cadastrosrh.model;
 
 public enum StatusCandidato {
     CANDIDATO,

@@ -1,68 +1,82 @@
-package com.RHgroup.CadastrosRH.model;
+package com.rhgroup.cadastrosrh.model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
 import java.util.UUID;
-
-import jakarta.persistence.*;
-
-import lombok.AllArgsConstructor;
-import lombok.NoArgsConstructor;
-import lombok.Getter;
-import lombok.Setter;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails; // Importante
 
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
+@Builder(toBuilder = true)
 @Entity
-@Table(name= "candidatos")
-
-// Implementa UserDetails
-public class Candidato implements UserDetails {
+@Table(name = "candidatos",
+        indexes = {
+                @Index(name = "idx_candidatos_nome", columnList = "nome"),
+                @Index(name = "idx_candidatos_status", columnList = "status")
+        })
+public class Candidato {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false)
+    @Column(nullable = false, length = 255)
     private String nome;
 
-    @Column(name = "cpf", length = 11, nullable = false, unique = true)
+    @Column(length = 11, nullable = false, unique = true)
     private String cpf;
 
+    @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
-    @Column(nullable = false, unique = true)
+    @Column(nullable = false, unique = true, length = 255)
     private String email;
 
-    // Novo campo para a senha, NUNCA nullable=false, pois usuários antigos podem não ter
-    // Se for um sistema novo, deve ser nullable = false. Para este exemplo, vamos assumir que pode ser nulo se não for um usuário do sistema.
+    @JsonIgnore
+    @Column(name = "senha_hash", length = 60, nullable = false)
     private String senha;
 
+    @Column(length = 20)
     private String celular;
 
-    @Column(name = "area_interesse")
+    @Column(name = "area_interesse", columnDefinition = "TEXT")
     private String areaInteresse;
 
     @Column(name = "experiencia_anos", nullable = false)
     private Integer experienciaAnos;
 
+    @Column(name = "pretensao_salarial", precision = 12, scale = 2)
     private BigDecimal pretensaoSalarial;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private StatusCandidato status; // Tipo correto: StatusCandidato
+    @Column(nullable = false, length = 20)
+    private StatusCandidato status;
 
 
-    // Campos de auditoria
+    @Column(name = "curriculo_url", length = 500)
+    private String curriculoUrl;
+
+    @Column(name = "curriculo_nome", length = 255)
+    private String curriculoNome;
+
+    @Column(name = "curriculo_content_type", length = 100)
+    private String curriculoContentType;
+
+    @Column(name = "curriculo_tamanho_bytes")
+    private Long curriculoTamanhoBytes;
+
+    @Column(name = "curriculo_atualizado_em")
+    private LocalDateTime curriculoAtualizadoEm;
+
+    @Column(name = "curriculo_storage", length = 10)
+    private String curriculoStorage;
+
     @Column(name = "criado_em", nullable = false, updatable = false)
     private LocalDateTime criadoEm;
 
@@ -80,49 +94,40 @@ public class Candidato implements UserDetails {
         this.atualizadoEm = LocalDateTime.now();
     }
 
-    // ----------------------------------------------------------------------
-    // Implementação de UserDetails
-    // ----------------------------------------------------------------------
+    public Candidato(
+            UUID id,
+            String nome,
+            String cpf,
+            LocalDate dataNascimento,
+            String email,
+            String senha,
+            String celular,
+            String areaInteresse,
+            Integer experienciaAnos,
+            BigDecimal pretensaoSalarial,
+            StatusCandidato status,
+            LocalDateTime criadoEm,
+            LocalDateTime atualizadoEm
+    ) {
+        this.id = id;
+        this.nome = nome;
+        this.cpf = cpf;
+        this.dataNascimento = dataNascimento;
+        this.email = email;
+        this.senha = senha;
+        this.celular = celular;
+        this.areaInteresse = areaInteresse;
+        this.experienciaAnos = experienciaAnos;
+        this.pretensaoSalarial = pretensaoSalarial;
+        this.status = status;
+        this.criadoEm = criadoEm;
+        this.atualizadoEm = atualizadoEm;
 
-    /**
-     * Define as permissões (roles) do usuário.
-     * Estamos definindo uma role fixa 'ROLE_USER' para todos os candidatos.
-     */
-    @Override
-    public Collection<? extends GrantedAuthority> getAuthorities() {
-        // Você pode retornar roles mais específicas baseadas em um campo 'role' no Candidato
-        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
-    }
-
-    @Override
-    public String getPassword() {
-        return this.senha; // Retorna o campo 'senha'
-    }
-
-    @Override
-    public String getUsername() {
-        return this.email; // Usamos o email como nome de usuário
-    }
-
-    // Métodos de expiração/bloqueio (geralmente retornam true por padrão)
-    @Override
-    public boolean isAccountNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isAccountNonLocked() {
-        return true;
-    }
-
-    @Override
-    public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        // Apenas permite login se o status não for REPROVADO, por exemplo
-        return this.status != StatusCandidato.REPROVADO;
+        this.curriculoUrl = null;
+        this.curriculoNome = null;
+        this.curriculoContentType = null;
+        this.curriculoTamanhoBytes = null;
+        this.curriculoAtualizadoEm = null;
+        this.curriculoStorage = null;
     }
 }

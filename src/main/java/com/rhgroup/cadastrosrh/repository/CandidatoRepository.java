@@ -1,7 +1,7 @@
-package com.RHgroup.CadastrosRH.repository;
+package com.rhgroup.cadastrosrh.repository;
 
-import com.RHgroup.CadastrosRH.model.Candidato;
-import com.RHgroup.CadastrosRH.model.StatusCandidato;
+import com.rhgroup.cadastrosrh.model.Candidato;
+import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

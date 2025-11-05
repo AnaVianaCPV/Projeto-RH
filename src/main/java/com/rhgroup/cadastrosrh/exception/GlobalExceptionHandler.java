@@ -1,4 +1,4 @@
-package com.RHgroup.CadastrosRH.exception;
+package com.rhgroup.cadastrosrh.exception;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,4 @@
-package com.RHgroup.CadastrosRH.exception;
+package com.rhgroup.cadastrosrh.exception;
 // Classe criada  para lidar com conflitos de unicidade (409)
 
 import org.springframework.http.HttpStatus;

@@ -1,4 +1,53 @@
-package com.RHgroup.CadastrosRH.security;
+package com.rhgroup.cadastrosrh.security;
 
-public class CandidatoUserDetails {
+import com.rhgroup.cadastrosrh.model.Candidato;
+import com.rhgroup.cadastrosrh.model.StatusCandidato;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+
+import java.util.Collection;
+import java.util.List;
+
+public class CandidatoUserDetails implements UserDetails {
+    private final Candidato candidato;
+
+    public CandidatoUserDetails(Candidato candidato) {
+        this.candidato = candidato;
+    }
+
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority("ROLE_USER"));
+    }
+
+    @Override
+    public String getPassword() {
+        return candidato.getSenha();
+    }
+
+    @Override
+    public String getUsername() {
+        return candidato.getEmail();
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return candidato.getStatus() != StatusCandidato.REPROVADO;
+    }
 }

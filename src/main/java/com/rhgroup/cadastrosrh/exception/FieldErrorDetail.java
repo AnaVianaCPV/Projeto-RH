@@ -1,4 +1,4 @@
-package com.RHgroup.CadastrosRH.exception;
+package com.rhgroup.cadastrosrh.exception;
 
 public record FieldErrorDetail(String field, String message) {
 

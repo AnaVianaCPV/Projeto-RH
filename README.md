@@ -1,3 +1,22 @@
+Como Iniciar a API com PostgreSQL
+
+# 1. Defina as credenciais de conexão do PostgreSQL
+#    (A aplicação usará o driver PostgreSQL e o arquivo application-postgres.yml)
+$env:SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/rhdb"
+$env:SPRING_DATASOURCE_USERNAME="seu-username-aqui"
+$env:SPRING_DATASOURCE_PASSWORD="sua-senha-aqui"
+
+# 2. Ative o perfil 'postgres' (Instrui o Spring a usar application-postgres.yml)
+$env:SPRING_PROFILES_ACTIVE="postgres"
+
+# 3. Execute a Aplicação
+#    O Flyway fará a migração V1 automaticamente.
+./mvnw.cmd spring-boot:run
+Atenção: Em ambientes Linux/macOS, substitua $env:NOME_DA_VARIAVEL="valor"
+por export NOME_DA_VARIAVEL="valor" e use ./mvnw em vez de ./mvnw.cmd.
+
+
+
 # ✅ To-Do Checklist – RH API (Spring Boot + PostgreSQL) – Fase 1: Candidatos
 
 ✅ Feito

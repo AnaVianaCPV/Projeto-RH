@@ -1,8 +1,7 @@
-package com.RHgroup.CadastrosRH;
+package com.rhgroup.cadastrosrh.repository;
 
-import com.RHgroup.CadastrosRH.model.Candidato;
-import com.RHgroup.CadastrosRH.model.StatusCandidato;
-import com.RHgroup.CadastrosRH.repository.CandidatoRepository;
+import com.rhgroup.cadastrosrh.model.Candidato;
+import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
