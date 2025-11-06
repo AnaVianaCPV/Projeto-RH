@@ -1,7 +1,6 @@
 spring:
   config:
-    activate:
-      on-profile: test
+    activate.on-profile: test
 
   datasource:
     driver-class-name: org.h2.Driver
@@ -11,7 +10,12 @@ spring:
 
   jpa:
     database-platform: org.hibernate.dialect.H2Dialect
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
 
   flyway:
-    enabled: true
-    locations: classpath:db/migration/h2
+    check-location: false
+    locations:
+      - classpath:db/migration/h2
