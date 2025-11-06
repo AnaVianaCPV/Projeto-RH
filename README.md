@@ -1,3 +1,21 @@
+# CadastrosRH — API de RH (Fase 1: Candidatos)
+API REST para gestão de candidatos, construída com Java 21 e Spring Boot 3.5.x, com
+persistência em PostgreSQL (produção/dev) e H2 (tests). Inclui migrações Flyway,
+validações Bean Validation, paginação e filtros, tratamento de erros em RFC 7807
+(Problem Details), OpenAPI/Swagger, e uma configuração base de segurança (JWT)
+pensada para evoluir.
+
+# Stack Tecnológica
+•	Linguagem/Runtime: Java 21
+•	Framework: Spring Boot 3.5.x (Web, Data JPA, Validation)
+•	DB: PostgreSQL (dev/prod); H2 em memória (tests)
+•	Migração: Flyway
+•	Segurança: Spring Security + JWT (Nimbus)
+•	Doc: springdoc-openapi (Swagger UI)
+•	Utilidades: Lombok, Jackson, BeanUtils, JPA Specifications
+•	Build: Maven
+
+
 Como Iniciar a API com PostgreSQL
 
 # 1. Defina as credenciais de conexão do PostgreSQL

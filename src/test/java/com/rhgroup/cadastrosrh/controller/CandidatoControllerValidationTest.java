@@ -1,6 +1,7 @@
 package com.rhgroup.cadastrosrh.controller;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
@@ -16,11 +17,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test")
 class CandidatoControllerValidationTest {
 
-    private final MockMvc mockMvc;
-
-    CandidatoControllerValidationTest(MockMvc mockMvc) {
-        this.mockMvc = mockMvc;
-    }
+    @Autowired
+    private MockMvc mockMvc;
 
     @Test
     @WithMockUser(roles = "USER")
@@ -33,11 +31,9 @@ class CandidatoControllerValidationTest {
             }
         """;
 
-        mockMvc.perform(
-                        post("/api/v1/candidatos")
-                                .contentType(MediaType.APPLICATION_JSON)
-                                .content(payload)
-                )
+        mockMvc.perform(post("/api/v1/candidatos")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(payload))
                 .andExpect(status().isBadRequest())
                 .andExpect(content().contentTypeCompatibleWith("application/problem+json"))
                 .andExpect(jsonPath("$.errors").exists());
