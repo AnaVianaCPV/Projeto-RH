@@ -13,5 +13,5 @@ spring:
 
   flyway:
     enabled: true
-    check-location: false
+    fail-on-missing-locations: false
     locations: classpath:db/postgresql

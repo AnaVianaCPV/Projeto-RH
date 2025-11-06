@@ -1,4 +1,4 @@
-package com.RHgroup.CadastrosRH;
+package com.rhgroup.cadastrosrh;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

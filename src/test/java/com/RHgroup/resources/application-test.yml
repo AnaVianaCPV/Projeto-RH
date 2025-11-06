@@ -18,4 +18,4 @@ spring:
   flyway:
     check-location: false
     locations:
-      - classpath:db/migration/h2
+      - classpath:db/h2
