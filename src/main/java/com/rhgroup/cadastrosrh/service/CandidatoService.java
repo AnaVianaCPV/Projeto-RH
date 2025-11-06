@@ -2,7 +2,7 @@ package com.rhgroup.cadastrosrh.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rhgroup.cadastrosrh.dto.CandidatoCreateDTO;
-import com.rhgroup.cadastrosrh.dto.CandidatoResponseDTO; // Import necessário
+import com.rhgroup.cadastrosrh.dto.CandidatoResponseDTO;
 import com.rhgroup.cadastrosrh.exception.ConflitoUnicidadeException;
 import com.rhgroup.cadastrosrh.exception.RecursoNaoEncontradoException;
 import com.rhgroup.cadastrosrh.model.Candidato;
@@ -27,6 +27,12 @@ import java.util.stream.Stream;
 @Service
 public class CandidatoService {
 
+    private static final String FIELD_SENHA = "senha";
+    private static final String FIELD_CPF = "cpf";
+    private static final String FIELD_EMAIL = "email";
+    private static final String FIELD_ID = "id";
+    private static final String FIELD_CRIADO_EM = "criadoEm";
+
     private final CandidatoRepository repository;
     private final ObjectMapper objectMapper;
     private final PasswordEncoder passwordEncoder;
@@ -43,7 +49,7 @@ public class CandidatoService {
     @Transactional
     public CandidatoResponseDTO criar(CandidatoCreateDTO dtoIn) {
         Candidato novoCandidato = new Candidato();
-        BeanUtils.copyProperties(dtoIn, novoCandidato, "id");
+        BeanUtils.copyProperties(dtoIn, novoCandidato, FIELD_ID);
 
         Candidato salvo = salvarECriptografar(novoCandidato);
 
@@ -55,7 +61,7 @@ public class CandidatoService {
         Candidato existente = buscarPorId(id);
 
         Candidato candidatoAtualizado = new Candidato();
-        BeanUtils.copyProperties(dtoIn, candidatoAtualizado, "id");
+        BeanUtils.copyProperties(dtoIn, candidatoAtualizado, FIELD_ID);
 
         Candidato atualizado = aplicarAtualizacao(existente, candidatoAtualizado);
 
@@ -105,7 +111,7 @@ public class CandidatoService {
             candidatoAtualizado.setSenha(existente.getSenha());
         }
 
-        BeanUtils.copyProperties(candidatoAtualizado, existente, "id", "criadoEm");
+        BeanUtils.copyProperties(candidatoAtualizado, existente, FIELD_ID, FIELD_CRIADO_EM);
 
         return repository.save(existente);
     }
@@ -130,52 +136,62 @@ public class CandidatoService {
                 .orElseThrow(() -> new RecursoNaoEncontradoException("Candidato não encontrado: " + id));
     }
 
+
     @Transactional
     public Candidato atualizarParcialmente(UUID id, Map<String, Object> updates) {
-
         Candidato existente = buscarPorId(id);
 
-        if (updates.containsKey("senha")) {
-            Object raw = updates.get("senha");
+        processarSenha(updates);
+        processarCpf(updates, existente);
+        processarEmail(updates, existente);
+
+        Candidato parcial = objectMapper.convertValue(updates, Candidato.class);
+        copyNonNullProperties(parcial, existente, FIELD_ID, FIELD_CRIADO_EM);
+
+        return repository.save(existente);
+    }
+
+    private void processarSenha(Map<String, Object> updates) {
+        if (updates.containsKey(FIELD_SENHA)) {
+            Object raw = updates.get(FIELD_SENHA);
             if (raw instanceof String s && !s.isBlank()) {
-                updates.put("senha", passwordEncoder.encode(s));
+                updates.put(FIELD_SENHA, passwordEncoder.encode(s));
             } else {
-                updates.remove("senha");
+                updates.remove(FIELD_SENHA);
             }
         }
+    }
 
-        if (updates.containsKey("cpf")) {
-            Object raw = updates.get("cpf");
+    private void processarCpf(Map<String, Object> updates, Candidato existente) {
+        if (updates.containsKey(FIELD_CPF)) {
+            Object raw = updates.get(FIELD_CPF);
             if (raw instanceof String s && !s.isBlank()) {
                 String novoCpf = s.replaceAll("\\D", "");
                 if (!novoCpf.equals(existente.getCpf()) && repository.existsByCpf(novoCpf)) {
                     throw new ConflitoUnicidadeException("CPF já cadastrado.");
                 }
-                updates.put("cpf", novoCpf);
+                updates.put(FIELD_CPF, novoCpf);
             } else {
-                updates.remove("cpf");
+                updates.remove(FIELD_CPF);
             }
         }
+    }
 
-        if (updates.containsKey("email")) {
-            Object raw = updates.get("email");
+    private void processarEmail(Map<String, Object> updates, Candidato existente) {
+        if (updates.containsKey(FIELD_EMAIL)) {
+            Object raw = updates.get(FIELD_EMAIL);
             if (raw instanceof String s && !s.isBlank()) {
                 String novoEmail = s.trim();
                 if (!novoEmail.equalsIgnoreCase(existente.getEmail()) && repository.existsByEmail(novoEmail)) {
                     throw new ConflitoUnicidadeException("Email já cadastrado.");
                 }
-                updates.put("email", novoEmail);
+                updates.put(FIELD_EMAIL, novoEmail);
             } else {
-                updates.remove("email");
+                updates.remove(FIELD_EMAIL);
             }
         }
-
-        Candidato parcial = objectMapper.convertValue(updates, Candidato.class);
-
-        copyNonNullProperties(parcial, existente, "id", "criadoEm");
-
-        return repository.save(existente);
     }
+
 
     @Transactional
     public void deletar(UUID id) {

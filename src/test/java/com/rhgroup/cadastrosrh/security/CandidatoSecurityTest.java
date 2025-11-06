@@ -1,19 +1,23 @@
 package com.rhgroup.cadastrosrh.security;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rhgroup.cadastrosrh.controller.CandidatoController;
+import com.rhgroup.cadastrosrh.dto.CandidatoCreateDTO;
+import com.rhgroup.cadastrosrh.dto.CandidatoResponseDTO;
 import com.rhgroup.cadastrosrh.model.Candidato;
 import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import com.rhgroup.cadastrosrh.service.CandidatoService;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito; // Importação do Mockito
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration; // Nova importação
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.security.test.context.support.WithAnonymousUser;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigDecimal;
@@ -26,87 +30,114 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(CandidatoController.class)
-@DisplayName("Testes de Segurança para CandidatoController")
+
+@WebMvcTest(controllers = CandidatoController.class)
+@DisplayName("Security | CandidatoController")
 class CandidatoSecurityTest {
 
-    // CandidatoService agora será injetado via a classe de Configuração de Teste
+    private static final String BASE_URL = "/api/v1/candidatos";
+
     @Autowired
     private MockMvc mockMvc;
 
+    @Autowired
+    private ObjectMapper objectMapper;
 
-    // Construtor com 13 argumentos na ordem do AllArgsConstructor:
-    private final Candidato mockCandidato = new Candidato(
-            UUID.randomUUID(), // 1. id
-            "Teste Seguranca",  // 2. nome
-            "11122233344",      // 3. cpf
-            LocalDate.of(1990, 1, 1), // 4. dataNascimento
-            "teste@seguranca.com",    // 5. email
-            "senha_codificada", // 6. senha
-            "99887766",         // 7. celular
-            "Backend",          // 8. areaInteresse
-            5,                  // 9. experienciaAnos
-            new BigDecimal("6000.00"), // 10. pretensaoSalarial
-            StatusCandidato.ATIVO,     // 11. status
-            null, // 12. criadoEm
-            null  // 13. atualizadoEm
-    );
-
-    /**
-     * Classe de Configuração Aninhada para fornecer o Mock do CandidatoService.
-     * Esta é a alternativa recomendada ao @MockBean para evitar a depreciação.
-     */
-    @Configuration
+    @TestConfiguration
     static class TestConfig {
         @Bean
-        public CandidatoService candidatoService() {
-            // Cria e expõe o mock do serviço como um bean do Spring
+        CandidatoService candidatoService() {
             return Mockito.mock(CandidatoService.class);
         }
     }
 
-    // --- Teste de Acesso a Rota Pública (Cadastro) ---
-
-    @Test
-    @DisplayName("POST /api/candidatos deve permitir acesso a usuários anônimos")
-    @WithAnonymousUser
-    void postCandidato_DevePermitirAcessoAnonimo(@Autowired CandidatoService candidatoService) throws Exception {
-        // Arrange
-        // Usamos o mockService injetado como argumento no método de teste
-        when(candidatoService.salvar(any(Candidato.class))).thenReturn(mockCandidato);
-
-        String candidatoJson = "{\"nome\": \"Novo Candidato\", \"cpf\": \"99999999999\", \"email\": \"anonimo@teste.com\", \"senha\": \"minhasenhaforte\", \"experienciaAnos\": 2, \"status\": \"ATIVO\"}";
-
-        // Act & Assert
-        mockMvc.perform(post("/api/candidatos")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(candidatoJson))
-                .andExpect(status().isCreated());
+    private CandidatoResponseDTO buildResponseDTO() {
+        CandidatoResponseDTO dto = new CandidatoResponseDTO();
+        dto.setId(UUID.randomUUID());
+        dto.setNome("Novo Candidato");
+        dto.setEmail("anonimo@teste.com");
+        dto.setStatus(StatusCandidato.ATIVO);
+        return dto;
     }
 
-    // --- Teste de Acesso a Rota Protegida (Busca por ID) ---
-
-    @Test
-    @DisplayName("GET /api/candidatos/{id} deve negar acesso a usuários anônimos (401)")
-    @WithAnonymousUser
-    void getCandidatoById_DeveNegarAcessoAnonimo() throws Exception {
-        // Act & Assert
-        mockMvc.perform(get("/api/candidatos/" + mockCandidato.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isUnauthorized());
+    private Candidato buildEntity(UUID id) {
+        return new Candidato(
+                id,
+                "Teste Segurança",
+                "11122233344",
+                LocalDate.of(1990, 1, 1),
+                "teste@seguranca.com",
+                "senha_codificada",
+                "1199887766",
+                "Backend",
+                5,
+                new BigDecimal("6000.00"),
+                StatusCandidato.ATIVO,
+                null,
+                null
+        );
     }
 
-    @Test
-    @DisplayName("GET /api/candidatos/{id} deve permitir acesso a usuários autenticados (200)")
-    @WithMockUser(username = "teste@seguranca.com", roles = "USER")
-    void getCandidatoById_DevePermitirAcessoAutenticado(@Autowired CandidatoService candidatoService) throws Exception {
-        // Arrange
-        // Usamos o mockService injetado como argumento no método de teste
-        when(candidatoService.buscarPorId(any(UUID.class))).thenReturn(mockCandidato);
+    private CandidatoCreateDTO buildCreateDTO() {
+        CandidatoCreateDTO dto = new CandidatoCreateDTO();
+        dto.setNome("Novo Candidato");
+        dto.setCpf("99999999999");
+        dto.setEmail("anonimo@teste.com");
+        dto.setSenha("minhasenhaforte");
+        dto.setCelular("11999999999");
+        dto.setAreaInteresse("Backend");
+        dto.setExperienciaAnos(2);
+        dto.setPretensaoSalarial(new BigDecimal("3500.00"));
+        dto.setStatus(StatusCandidato.ATIVO);
+        return dto;
+    }
 
-        // Act & Assert
-        mockMvc.perform(get("/api/candidatos/" + mockCandidato.getId())
-                        .contentType(MediaType.APPLICATION_JSON))
-                .andExpect(status().isOk());
+    @Nested
+    @DisplayName("Rotas públicas")
+    class PublicRoutes {
+
+        @Test
+        @DisplayName("POST /api/v1/candidatos | anônimo deve conseguir criar (201)")
+        @WithAnonymousUser
+        void post_anonimo_deveCriar_201(@Autowired CandidatoService candidatoService) throws Exception {
+            when(candidatoService.criar(any(CandidatoCreateDTO.class)))
+                    .thenReturn(buildResponseDTO());
+
+            String body = objectMapper.writeValueAsString(buildCreateDTO());
+
+            // Act & Assert
+            mockMvc.perform(post(BASE_URL)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .content(body))
+                    .andExpect(status().isCreated());
+        }
+    }
+
+    @Nested
+    @DisplayName("Rotas protegidas")
+    class ProtectedRoutes {
+
+        @Test
+        @DisplayName("GET /api/v1/candidatos/{id} | anônimo deve receber 401")
+        @WithAnonymousUser
+        void get_porId_anonimo_401() throws Exception {
+            UUID id = UUID.randomUUID();
+
+            mockMvc.perform(get(BASE_URL + "/" + id)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isUnauthorized());
+        }
+
+        @Test
+        @DisplayName("GET /api/v1/candidatos/{id} | autenticado deve receber 200")
+        @WithMockUser(username = "teste@seguranca.com", roles = {"USER"})
+        void get_porId_autenticado_200(@Autowired CandidatoService candidatoService) throws Exception {
+            UUID id = UUID.randomUUID();
+            when(candidatoService.buscarPorId(id)).thenReturn(buildEntity(id));
+
+            mockMvc.perform(get(BASE_URL + "/" + id)
+                            .contentType(MediaType.APPLICATION_JSON))
+                    .andExpect(status().isOk());
+        }
     }
 }

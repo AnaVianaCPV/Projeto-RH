@@ -6,16 +6,21 @@ $env:SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/rhdb"
 $env:SPRING_DATASOURCE_USERNAME="seu-username-aqui"
 $env:SPRING_DATASOURCE_PASSWORD="sua-senha-aqui"
 
+# Causo use outra porta adicione ao login:
+$env:SPRING_DATASOURCE_PORT="sua-porta-aqui"
+
 # 2. Ative o perfil 'postgres' (Instrui o Spring a usar application-postgres.yml)
 $env:SPRING_PROFILES_ACTIVE="postgres"
+
+./mvnw.cmd spring-boot:run
+
 
 # 3. Execute a Aplicação
 #    O Flyway fará a migração V1 automaticamente.
 ./mvnw.cmd spring-boot:run
+
 Atenção: Em ambientes Linux/macOS, substitua $env:NOME_DA_VARIAVEL="valor"
 por export NOME_DA_VARIAVEL="valor" e use ./mvnw em vez de ./mvnw.cmd.
-
-
 
 # ✅ To-Do Checklist – RH API (Spring Boot + PostgreSQL) – Fase 1: Candidatos
 
