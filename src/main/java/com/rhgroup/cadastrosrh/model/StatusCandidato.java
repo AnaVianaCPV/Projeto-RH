@@ -6,7 +6,7 @@ public enum StatusCandidato {
     APROVADO,
     REPROVADO,
 
-    // Novos status adicionados para compatibilidade com o teste:
+
     ATIVO,
     EM_ENTREVISTA
 }

@@ -1,9 +1,9 @@
 package com.rhgroup.cadastrosrh.dto;
 
+import com.rhgroup.cadastrosrh.model.Candidato;
 import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import jakarta.validation.constraints.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -14,34 +14,49 @@ import java.time.LocalDate;
 @Builder
 public class CandidatoCreateDTO {
 
-    @NotBlank(message = "O nome é obrigatório")
+    @NotBlank
     private String nome;
 
-    @NotBlank(message = "O CPF é obrigatório")
-    @Size(min = 11, max = 11, message = "O CPF deve ter 11 dígitos")
+    @NotBlank
+    @Size(min = 11, max = 11)
     private String cpf;
 
-    @Past(message = "A data de nascimento deve estar no passado")
+    @Past
     private LocalDate dataNascimento;
 
-    @NotBlank(message = "O email é obrigatório")
-    @Email(message = "Formato de email inválido")
+    @NotBlank
+    @Email
     private String email;
 
-    @NotBlank(message = "A senha é obrigatória")
-    @Size(min = 6, message = "A senha deve ter pelo menos 6 caracteres")
+    @NotBlank
+    @Size(min = 6)
     private String senha;
 
     private String celular;
     private String areaInteresse;
 
-    @NotNull(message = "A experiência em anos é obrigatória")
-    @Min(value = 0, message = "A experiência não pode ser negativa")
+    @NotNull
+    @Min(0)
     private Integer experienciaAnos;
 
-    @DecimalMin(value = "0.0", message = "A pretensão salarial não pode ser negativa")
+    @DecimalMin("0.0")
     private BigDecimal pretensaoSalarial;
 
-    @NotNull(message = "O status é obrigatório")
+    @NotNull
     private StatusCandidato status;
+
+    public Candidato toEntity(String senhaHash) {
+        return Candidato.builder()
+                .nome(this.nome)
+                .cpf(this.cpf)
+                .email(this.email)
+                .senhaHash(senhaHash)
+                .dataNascimento(this.dataNascimento)
+                .celular(this.celular)
+                .areaInteresse(this.areaInteresse)
+                .experienciaAnos(this.experienciaAnos)
+                .pretensaoSalarial(this.pretensaoSalarial)
+                .status(this.status)
+                .build();
+    }
 }

@@ -11,6 +11,7 @@ import java.util.UUID;
 
 @Getter
 @Setter
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true)
@@ -26,7 +27,7 @@ public class Candidato {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String nome;
 
     @Column(length = 11, nullable = false, unique = true)
@@ -35,12 +36,12 @@ public class Candidato {
     @Column(name = "data_nascimento")
     private LocalDate dataNascimento;
 
-    @Column(nullable = false, unique = true, length = 255)
+    @Column(nullable = false, unique = true)
     private String email;
 
     @JsonIgnore
     @Column(name = "senha_hash", length = 60, nullable = false)
-    private String senha;
+    private String senhaHash;
 
     @Column(length = 20)
     private String celular;
@@ -62,7 +63,7 @@ public class Candidato {
     @Column(name = "curriculo_url", length = 500)
     private String curriculoUrl;
 
-    @Column(name = "curriculo_nome", length = 255)
+    @Column(name = "curriculo_nome")
     private String curriculoNome;
 
     @Column(name = "curriculo_content_type", length = 100)
@@ -92,42 +93,5 @@ public class Candidato {
     @PreUpdate
     public void aoAtualizar() {
         this.atualizadoEm = LocalDateTime.now();
-    }
-
-    public Candidato(
-            UUID id,
-            String nome,
-            String cpf,
-            LocalDate dataNascimento,
-            String email,
-            String senha,
-            String celular,
-            String areaInteresse,
-            Integer experienciaAnos,
-            BigDecimal pretensaoSalarial,
-            StatusCandidato status,
-            LocalDateTime criadoEm,
-            LocalDateTime atualizadoEm
-    ) {
-        this.id = id;
-        this.nome = nome;
-        this.cpf = cpf;
-        this.dataNascimento = dataNascimento;
-        this.email = email;
-        this.senha = senha;
-        this.celular = celular;
-        this.areaInteresse = areaInteresse;
-        this.experienciaAnos = experienciaAnos;
-        this.pretensaoSalarial = pretensaoSalarial;
-        this.status = status;
-        this.criadoEm = criadoEm;
-        this.atualizadoEm = atualizadoEm;
-
-        this.curriculoUrl = null;
-        this.curriculoNome = null;
-        this.curriculoContentType = null;
-        this.curriculoTamanhoBytes = null;
-        this.curriculoAtualizadoEm = null;
-        this.curriculoStorage = null;
     }
 }

@@ -5,7 +5,6 @@ import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.beans.BeanUtils;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -27,12 +26,11 @@ public class CandidatoResponseDTO {
     private LocalDateTime criadoEm;
     private LocalDateTime atualizadoEm;
 
-    public static CandidatoResponseDTO fromEntity(Candidato candidato) {
-        if (candidato == null) {
-            return null;
-        }
+    public static CandidatoResponseDTO fromEntity(Candidato c) {
+        if (c == null) return null;
         var dto = new CandidatoResponseDTO();
-        BeanUtils.copyProperties(candidato, dto);
+        BeanUtils.copyProperties(c, dto);
+        dto.setCpf(null);
         return dto;
     }
 }

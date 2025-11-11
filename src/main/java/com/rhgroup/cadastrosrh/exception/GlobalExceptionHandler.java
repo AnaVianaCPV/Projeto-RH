@@ -1,61 +1,66 @@
 package com.rhgroup.cadastrosrh.exception;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.net.URI;
-import java.time.OffsetDateTime;
-import java.util.List;
-import java.util.stream.Collectors;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.Optional;
 
-@RestControllerAdvice // diz pro Spring que esse arquivo cuida dos erros da API
+@RestControllerAdvice
 public class GlobalExceptionHandler {
 
-  //  Quando algo dá errado por erro de validação (ex: campo vazio ou email inválido)
   @ExceptionHandler(MethodArgumentNotValidException.class)
-  public ProblemDetail handleValidation(MethodArgumentNotValidException ex) {
-    // Pega os erros de campo e transforma numa lista mais fácil de ler
-    List<FieldErrorDetail> fieldErrors = ex.getBindingResult().getFieldErrors().stream()
-            .map(error -> new FieldErrorDetail(
-                    error.getField(),
-                    error.getDefaultMessage()
-            ))
-            .collect(Collectors.toList());
-
-    // Cria o corpo da resposta
-    ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
-    problem.setTitle("Erro de validação");
-    problem.setDetail("Um ou mais campos estão inválidos.");
-    problem.setType(URI.create("about:blank#bad-request"));
-    problem.setProperty("timestamp", OffsetDateTime.now());
-    problem.setProperty("fields", fieldErrors);
-
-    return problem;
+  public ProblemDetail handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
+    ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.BAD_REQUEST);
+    pd.setTitle("Dados inválidos");
+    pd.setDetail("Verifique os campos e tente novamente");
+    pd.setProperty("errors", ex.getBindingResult().getFieldErrors().stream()
+            .map(this::toError)
+            .toList());
+    pd.setProperty("path", req.getRequestURI());
+    return pd;
   }
 
-  // Quando o sistema tenta salvar algo duplicado (ex: mesmo CPF ou e-mail)
+  @ExceptionHandler(NotFoundException.class)
+  public ProblemDetail handleNotFound(NotFoundException ex, HttpServletRequest req) {
+    ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.NOT_FOUND);
+    pd.setTitle("Recurso não encontrado");
+    pd.setDetail(ex.getMessage());
+    pd.setProperty("path", req.getRequestURI());
+    return pd;
+  }
+
+  @ExceptionHandler(ConflitoUnicidadeException.class)
+  public ProblemDetail handleConflict(ConflitoUnicidadeException ex, HttpServletRequest req) {
+    ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+    pd.setTitle("Conflito de dados");
+    pd.setDetail(ex.getMessage());
+    pd.setProperty("path", req.getRequestURI());
+    return pd;
+  }
+
   @ExceptionHandler(DataIntegrityViolationException.class)
-  public ProblemDetail handleDuplicate(DataIntegrityViolationException ex) {
-    ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.CONFLICT);
-    problem.setTitle("Conflito de dados");
-    problem.setDetail("Já existe um registro com esse e-mail ou CPF.");
-    problem.setType(URI.create("about:blank#conflict"));
-    problem.setProperty("timestamp", OffsetDateTime.now());
-    return problem;
+  public ProblemDetail handleIntegrity(DataIntegrityViolationException ex, HttpServletRequest req) {
+    ProblemDetail pd = ProblemDetail.forStatus(HttpStatus.CONFLICT);
+    pd.setTitle("Violação de integridade");
+    pd.setDetail("Violação de integridade referencial no banco de dados.");
+    pd.setProperty("path", req.getRequestURI());
+    return pd;
   }
 
-  //Quando algo inesperado acontece no sistema
-  @ExceptionHandler(Exception.class)
-  public ProblemDetail handleGeneric(Exception ex) {
-    ProblemDetail problem = ProblemDetail.forStatus(HttpStatus.INTERNAL_SERVER_ERROR);
-    problem.setTitle("Erro interno");
-    problem.setDetail("Ocorreu um erro inesperado. Tente novamente mais tarde.");
-    problem.setType(URI.create("about:blank#internal-error"));
-    problem.setProperty("timestamp", OffsetDateTime.now());
-    return problem;
+  private Map<String, Object> toError(FieldError fe) {
+    Map<String, Object> m = new LinkedHashMap<>();
+    m.put("field", fe.getField());
+    m.put("message", Optional.ofNullable(fe.getDefaultMessage()).orElse("Valor inválido"));
+    Object rejected = fe.getRejectedValue();
+    if (rejected != null) m.put("rejectedValue", rejected);
+    return m;
   }
 }

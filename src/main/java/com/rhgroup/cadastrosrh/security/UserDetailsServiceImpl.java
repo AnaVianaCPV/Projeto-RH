@@ -1,28 +1,30 @@
 package com.rhgroup.cadastrosrh.security;
 
-import com.rhgroup.cadastrosrh.model.Candidato;
 import com.rhgroup.cadastrosrh.repository.CandidatoRepository;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
 
-    private final CandidatoRepository candidatoRepository;
+    private final CandidatoRepository repository;
 
-    public UserDetailsServiceImpl(CandidatoRepository candidatoRepository) {
-        this.candidatoRepository = candidatoRepository;
+    public UserDetailsServiceImpl(CandidatoRepository repository) {
+        this.repository = repository;
     }
-    @Transactional(readOnly = true)
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Candidato candidato = candidatoRepository.findByEmail(username)
-                .orElseThrow(() -> new UsernameNotFoundException("Candidato com email " + username + " não encontrado."));
+        var candidato = repository.findByEmail(username)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado: " + username));
 
-        return new CandidatoUserDetails(candidato);
+        return User.builder()
+                .username(candidato.getEmail())
+                .password(candidato.getSenhaHash())
+                .roles("USER")
+                .build();
     }
-
 }

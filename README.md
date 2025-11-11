@@ -1,46 +1,95 @@
-# CadastrosRH — API de RH (Fase 1: Candidatos)
-API REST para gestão de candidatos, construída com Java 21 e Spring Boot 3.5.x, com
-persistência em PostgreSQL (produção/dev) e H2 (tests). Inclui migrações Flyway,
-validações Bean Validation, paginação e filtros, tratamento de erros em RFC 7807
-(Problem Details), OpenAPI/Swagger, e uma configuração base de segurança (JWT)
-pensada para evoluir.
+# 💼 CadastrosRH — API de RH (Fase 1: Candidatos)
 
-# Stack Tecnológica
-•	Linguagem/Runtime: Java 21
-•	Framework: Spring Boot 3.5.x (Web, Data JPA, Validation)
-•	DB: PostgreSQL (dev/prod); H2 em memória (tests)
-•	Migração: Flyway
-•	Segurança: Spring Security + JWT (Nimbus)
-•	Doc: springdoc-openapi (Swagger UI)
-•	Utilidades: Lombok, Jackson, BeanUtils, JPA Specifications
-•	Build: Maven
+API REST para gestão de candidatos, construída com **Java 21** e **Spring Boot 3.5.x**, com:
+- Persistência em **PostgreSQL** (produção/dev) e **H2** (testes);
+- Migrações **Flyway**;
+- Validações **Bean Validation**;
+- Paginação e filtros;
+- Tratamento de erros em **RFC 7807 (Problem Details)**;
+- Documentação com **OpenAPI/Swagger**;
+- Camada de segurança inicial com **Spring Security + JWT (Nimbus)**, pronta para evoluir.
 
+---
 
-Como Iniciar a API com PostgreSQL
+## ⚙️ Stack Tecnológica
 
-# 1. Defina as credenciais de conexão do PostgreSQL
-#    (A aplicação usará o driver PostgreSQL e o arquivo application-postgres.yml)
-$env:SPRING_DATASOURCE_URL="jdbc:postgresql://localhost:5432/rhdb"
+| Componente | Tecnologia |
+|-------------|-------------|
+| **Linguagem/Runtime** | Java 21 |
+| **Framework** | Spring Boot 3.5.x (Web, Data JPA, Validation) |
+| **Banco de Dados** | PostgreSQL (dev/prod) / H2 em memória (testes) |
+| **Migrações** | Flyway |
+| **Segurança** | Spring Security + JWT (Nimbus) |
+| **Documentação** | springdoc-openapi (Swagger UI) |
+| **Utilidades** | Lombok, Jackson, BeanUtils, JPA Specifications |
+| **Build** | Maven |
+
+---
+
+## 🐘 Como Iniciar a API com PostgreSQL
+
+A aplicação usa o driver PostgreSQL e o arquivo `application-postgres.yml`.
+
+### 🔧 1️⃣ Defina as variáveis de ambiente:
+
+```bash
+$env:SPRING_PROFILES_ACTIVE="postgres"
+$env:SPRING_DATASOURCE_PORT="sua-porta-aqui"
 $env:SPRING_DATASOURCE_USERNAME="seu-username-aqui"
 $env:SPRING_DATASOURCE_PASSWORD="sua-senha-aqui"
-
-# Causo use outra porta adicione ao login:
-$env:SPRING_DATASOURCE_PORT="sua-porta-aqui"
-
-# 2. Ative o perfil 'postgres' (Instrui o Spring a usar application-postgres.yml)
-$env:SPRING_PROFILES_ACTIVE="postgres"
-
-./mvnw.cmd spring-boot:run
-
-
-# 3. Execute a Aplicação
-#    O Flyway fará a migração V1 automaticamente.
 ./mvnw.cmd spring-boot:run
 
 Atenção: Em ambientes Linux/macOS, substitua $env:NOME_DA_VARIAVEL="valor"
 por export NOME_DA_VARIAVEL="valor" e use ./mvnw em vez de ./mvnw.cmd.
 
-# ✅ To-Do Checklist – RH API (Spring Boot + PostgreSQL) – Fase 1: Candidatos
+Como Acessar o Banco de Dados H2 (Ambiente de Testes)
+
+A aplicação utiliza o H2 Database em memória para testes locais e automatizados.
+Esse banco é inicializado automaticamente na subida da API e pode ser acessado pelo console web embutido do H2.
+
+1️⃣ Inicie a API normalmente
+
+Para executar a aplicação com o banco H2 (padrão), basta rodar:
+
+./mvnw.cmd spring-boot:run
+
+2️⃣ Acesse o Console Web do H2
+
+Abra o navegador e entre em:
+
+http://localhost:8080/h2-console
+
+
+⚠️ Caso apareça uma janela pedindo usuário e senha HTTP, é a proteção padrão do Spring Security.
+No perfil H2, o console /h2-console está liberado automaticamente.
+Se continuar pedindo login, abra o link em uma aba anônima ou limpe o cache do navegador.
+
+3️⃣ Faça login no H2 Console
+Campo	Valor
+JDBC URL	jdbc:h2:mem:rhdb
+User Name	rhdb
+Password	(deixe em branco)
+
+Clique em Connect.
+
+4️⃣ Estrutura esperada
+
+Após o login, o console exibirá o schema PUBLIC com a tabela:
+
+CANDIDATOS
+
+
+Criada automaticamente via Flyway a partir do script db/h2/V1__create_table_candidatos.sql.
+
+✅ Observações
+
+O banco H2 é temporário (em memória) — é recriado toda vez que a aplicação reinicia.
+
+Esse perfil é usado apenas para testes locais.
+
+Em ambientes de desenvolvimento ou produção, utilize o perfil PostgreSQL.
+
+#✅ To-Do Checklist – RH API (Spring Boot + PostgreSQL) – Fase 1: Candidatos
 
 ✅ Feito
 ## 1) Banco & Migrações (Flyway)

@@ -1,7 +1,6 @@
 package com.rhgroup.cadastrosrh.security;
 
 import com.rhgroup.cadastrosrh.model.Candidato;
-import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +9,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CandidatoUserDetails implements UserDetails {
+
     private final Candidato candidato;
 
     public CandidatoUserDetails(Candidato candidato) {
@@ -23,7 +23,7 @@ public class CandidatoUserDetails implements UserDetails {
 
     @Override
     public String getPassword() {
-        return candidato.getSenha();
+        return candidato.getSenhaHash();
     }
 
     @Override
@@ -48,6 +48,6 @@ public class CandidatoUserDetails implements UserDetails {
 
     @Override
     public boolean isEnabled() {
-        return candidato.getStatus() != StatusCandidato.REPROVADO;
+        return true;
     }
 }

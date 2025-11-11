@@ -2,112 +2,76 @@ package com.rhgroup.cadastrosrh.controller;
 
 import com.rhgroup.cadastrosrh.dto.CandidatoCreateDTO;
 import com.rhgroup.cadastrosrh.dto.CandidatoResponseDTO;
-import com.rhgroup.cadastrosrh.model.Candidato;
+import com.rhgroup.cadastrosrh.dto.CandidatoUpdateDTO;
+import com.rhgroup.cadastrosrh.dto.CandidatoPatchDTO;
+import com.rhgroup.cadastrosrh.dto.CandidatoSenhaDTO;
 import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import com.rhgroup.cadastrosrh.service.CandidatoService;
-
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.http.MediaType;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
-import java.net.URI;
-import java.util.Map;
+import java.util.List;
 import java.util.UUID;
 
 @RestController
-@RequestMapping(value = "/api/v1/candidatos", produces = MediaType.APPLICATION_JSON_VALUE)
-@CrossOrigin(origins = "*")
+@RequestMapping("/api/v1/candidatos")
 public class CandidatoController {
 
-    private final CandidatoService candidatoService;
-
+    private final CandidatoService service;
 
     public CandidatoController(CandidatoService service) {
-        this.candidatoService = service;
+        this.service = service;
+    }
+
+    @PostMapping
+    public ResponseEntity<CandidatoResponseDTO> criar(@RequestBody CandidatoCreateDTO dto) {
+        CandidatoResponseDTO novo = service.criar(dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(novo);
     }
 
     @GetMapping
-    public ResponseEntity<Page<CandidatoResponseDTO>> listar(
-            @RequestParam(required = false) String nome,
-            @RequestParam(required = false) String email,
-            @RequestParam(required = false) StatusCandidato status,
-            @RequestParam(required = false) Integer experienciaMinima,
-            @RequestParam(required = false) Integer experienciaMaxima,
-            @PageableDefault(sort = "nome") Pageable pageable,
-            HttpServletRequest request,
-            HttpServletResponse response
-    ) {
-        Page<Candidato> page = candidatoService.listar(
-                nome, email, status, experienciaMinima, experienciaMaxima, pageable);
-
-        addPaginationLinks(request, response, page);
-
-        Page<CandidatoResponseDTO> dto = page.map(CandidatoResponseDTO::fromEntity);
-
-        return ResponseEntity.ok(dto);
+    public ResponseEntity<List<CandidatoResponseDTO>> listar() {
+        return ResponseEntity.ok(service.listarTodos());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CandidatoResponseDTO> buscarPorId(@PathVariable UUID id, HttpServletResponse response) {
-        Candidato c = candidatoService.buscarPorId(id);
-
-        if (c.getAtualizadoEm() != null) {
-            response.setHeader("ETag", "\"" + c.getAtualizadoEm().toEpochSecond(java.time.ZoneOffset.UTC) + "\"");
-        }
-
-        return ResponseEntity.ok(CandidatoResponseDTO.fromEntity(c));
+    public ResponseEntity<CandidatoResponseDTO> buscarPorId(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.buscarPorId(id));
     }
 
-    @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CandidatoResponseDTO> criar(@Valid @RequestBody CandidatoCreateDTO dtoIn) {
-        CandidatoResponseDTO dtoOut = candidatoService.criar(dtoIn);
-
-        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
-                .path("/{id}").buildAndExpand(dtoOut.getId()).toUri();
-
-        return ResponseEntity.created(location).body(dtoOut);
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<CandidatoResponseDTO>> buscarPorStatus(@PathVariable StatusCandidato status) {
+        return ResponseEntity.ok(service.buscarPorStatus(status));
     }
 
-    @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<CandidatoResponseDTO> atualizar(@PathVariable UUID id,
-                                                          @Valid @RequestBody CandidatoCreateDTO dtoIn) {
-        CandidatoResponseDTO dtoOut = candidatoService.atualizar(id, dtoIn);
-
-        return ResponseEntity.ok(dtoOut);
+    @PutMapping("/{id}")
+    public ResponseEntity<CandidatoResponseDTO> atualizar(
+            @PathVariable UUID id,
+            @RequestBody CandidatoUpdateDTO dto) {
+        CandidatoResponseDTO atualizado = service.atualizar(id, dto);
+        return ResponseEntity.ok(atualizado);
     }
 
-    @PatchMapping(value = "/{id}", consumes = "application/merge-patch+json")
-    public ResponseEntity<CandidatoResponseDTO> patch(@PathVariable UUID id,
-                                                      @RequestBody Map<String, Object> patch) {
-        Candidato salvo = candidatoService.atualizarParcialmente(id, patch);
+    @PatchMapping("/{id}")
+    public ResponseEntity<CandidatoResponseDTO> atualizarParcial(
+            @PathVariable UUID id,
+            @RequestBody CandidatoPatchDTO dto) {
+        CandidatoResponseDTO atualizado = service.atualizarParcial(id, dto);
+        return ResponseEntity.ok(atualizado);
+    }
 
-        return ResponseEntity.ok(CandidatoResponseDTO.fromEntity(salvo));
+    @PatchMapping("/{id}/senha")
+    public ResponseEntity<Void> atualizarSenha(
+            @PathVariable UUID id,
+            @RequestBody CandidatoSenhaDTO dto) {
+        service.atualizarSenha(id, dto);
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
-        candidatoService.deletar(id);
+        service.deletar(id);
         return ResponseEntity.noContent().build();
-    }
-
-    private void addPaginationLinks(HttpServletRequest req, HttpServletResponse res, Page<?> page) {
-        var base = req.getRequestURL().toString();
-        StringBuilder links = new StringBuilder();
-        if (page.hasPrevious()) {
-            links.append("<").append(base).append("?page=").append(page.getNumber() - 1)
-                    .append("&size=").append(page.getSize()).append(">; rel=\"prev\", ");
-        }
-        if (page.hasNext()) {
-            links.append("<").append(base).append("?page=").append(page.getNumber() + 1)
-                    .append("&size=").append(page.getSize()).append(">; rel=\"next\"");
-        }
-        if (!links.isEmpty()) res.addHeader("Link", links.toString());
     }
 }
