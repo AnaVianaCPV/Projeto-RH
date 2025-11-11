@@ -1,6 +1,7 @@
 spring:
   application:
     name: cadastrosrh
+
   profiles:
     active: h2
 

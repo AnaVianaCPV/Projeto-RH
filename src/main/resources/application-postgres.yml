@@ -1,12 +1,16 @@
 spring:
+  config:
+    activate:
+      on-profile: postgres
+
   application:
     name: cadastrosrh
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/rhdb}
     driver-class-name: org.postgresql.Driver
-    username: ${SPRING_DATASOURCE_USERNAME}
-    password: ${SPRING_DATASOURCE_PASSWORD}
+    username: ${SPRING_DATASOURCE_USERNAME:postgres}
+    password: ${SPRING_DATASOURCE_PASSWORD:admin}
 
   jpa:
     open-in-view: false
@@ -15,11 +19,10 @@ spring:
     properties:
       hibernate:
         format_sql: true
-        dialect: org.hibernate.dialect.PostgreSQLDialect
 
   flyway:
     enabled: true
-    locations: classpath:db/postgres
+    locations: classpath:db/postgresql
     fail-on-missing-locations: false
 
 server:
