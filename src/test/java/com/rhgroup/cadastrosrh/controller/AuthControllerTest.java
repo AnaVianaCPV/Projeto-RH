@@ -1,6 +1,7 @@
 package com.rhgroup.cadastrosrh.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rhgroup.cadastrosrh.CadastrosRhApplication;
 import com.rhgroup.cadastrosrh.repository.CandidatoRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -20,8 +21,12 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
-@SpringBootTest
+@SpringBootTest(
+        classes = CadastrosRhApplication.class, // Declara a classe principal
+        webEnvironment = WebEnvironment.MOCK
+)
 @AutoConfigureMockMvc
 @ActiveProfiles("h2")
 @DisplayName("AuthController")
