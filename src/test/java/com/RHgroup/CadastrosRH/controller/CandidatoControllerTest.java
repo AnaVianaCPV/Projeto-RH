@@ -1,6 +1,7 @@
-package com.rhgroup.cadastrosrh.controller;
+package com.RHgroup.CadastrosRH.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.rhgroup.cadastrosrh.CadastrosRhApplication;
 import com.rhgroup.cadastrosrh.dto.*;
 import com.rhgroup.cadastrosrh.exception.ConflitoUnicidadeException;
 import com.rhgroup.cadastrosrh.exception.GlobalExceptionHandler;
@@ -12,7 +13,8 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.context.SpringBootTest.WebEnvironment; // Para o webEnvironment
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -30,16 +32,26 @@ import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@WebMvcTest(CandidatoController.class)
+
+//  Usamos @SpringBootTest para podermos declarar a classe
+// principal e carregar o contexto web (MOCK) necessário.
+@SpringBootTest(
+        classes = CadastrosRhApplication.class,
+        webEnvironment = WebEnvironment.MOCK
+)
 @AutoConfigureMockMvc(addFilters = false)
+// O GlobalExceptionHandler é importante para testar retornos de erro
 @Import(GlobalExceptionHandler.class)
 @DisplayName("Web | CandidatoController")
 class CandidatoControllerTest {
 
     private static final String BASE_URL = "/api/v1/candidatos";
 
+    // O MockMvc é injetado graças ao @AutoConfigureMockMvc
     @Autowired private MockMvc mockMvc;
+    // O ObjectMapper é resolvido com o contexto completo do @SpringBootTest
     @Autowired private ObjectMapper objectMapper;
+    // Mockamos o Service para testar apenas o Controller
     @MockitoBean
     private CandidatoService candidatoService;
 
