@@ -1,4 +1,4 @@
-package com.RHgroup.CadastrosRH.controller;
+package com.rhgroup.cadastrosrh.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.rhgroup.cadastrosrh.CadastrosRhApplication;
