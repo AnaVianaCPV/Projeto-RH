@@ -1,15 +1,17 @@
+package com.RHgroup.CadastrosRH;
 
-package com.rhgroup.cadastrosrh;
 
+import com.rhgroup.cadastrosrh.CadastrosRhApplication;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 
-@SpringBootTest
+
+@SpringBootTest(classes = CadastrosRhApplication.class)
 @ActiveProfiles("test")
 class CadastrosRhApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+    @Test
+    void contextLoads() {
+    }
 }
