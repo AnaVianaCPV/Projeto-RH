@@ -6,26 +6,42 @@ spring:
   application:
     name: cadastrosrh
 
+  # =================================================================
+  # 🔑 CONFIGURAÇÃO DO BANCO DE DADOS POSTGRESQL
+  #
+  # ESTA CONFIGURAÇÃO REQUER VARIÁVEIS DE AMBIENTE.
+  # Para rodar localmente, defina as variáveis antes de iniciar a aplicação (PowerShell):
+  #
+  # $env:SPRING_PROFILES_ACTIVE="postgres"
+  # $env:SPRING_DATASOURCE_PORT="[SUA_PORTA_POSTGRES]" # Ex: 5432 ou 5433
+  # $env:SPRING_DATASOURCE_USERNAME="[SEU_USERNAME]"    # Ex: postgres
+  # $env:SPRING_DATASOURCE_PASSWORD="[SUA_SENHA]"
+  # =================================================================
+
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5433/rhdb}
+    # A URL usa o valor padrão, mas exige que a porta seja definida via variável.
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:${SPRING_DATASOURCE_PORT:}/rhdb}
     driver-class-name: org.postgresql.Driver
-    username: ${SPRING_DATASOURCE_USERNAME:postgres}
-    password: ${SPRING_DATASOURCE_PASSWORD:admin}
+    # Estas variáveis devem ser definidas no ambiente para que a conexão funcione.
+    username: ${SPRING_DATASOURCE_USERNAME:}
+    password: ${SPRING_DATASOURCE_PASSWORD:}
 
   jpa:
     open-in-view: false
     hibernate:
-      ddl-auto: validate
+      ddl-auto: validate # Usamos 'validate' pois o Flyway gerencia o schema
     properties:
       hibernate:
         format_sql: true
 
   flyway:
     enabled: true
+    # Caminho onde o Flyway procura os scripts de migração (.sql)
     locations: classpath:db/postgresql
     fail-on-missing-locations: false
 
 server:
+  # Porta da aplicação. Valor padrão é 8080.
   port: ${SERVER_PORT:8080}
 
 logging:
