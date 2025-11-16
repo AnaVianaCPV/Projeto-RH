@@ -7,10 +7,11 @@ import com.rhgroup.cadastrosrh.dto.CandidatoPatchDTO;
 import com.rhgroup.cadastrosrh.dto.CandidatoSenhaDTO;
 import com.rhgroup.cadastrosrh.model.StatusCandidato;
 import com.rhgroup.cadastrosrh.service.CandidatoService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
 
@@ -27,7 +28,13 @@ public class CandidatoController {
     @PostMapping
     public ResponseEntity<CandidatoResponseDTO> criar(@RequestBody CandidatoCreateDTO dto) {
         CandidatoResponseDTO novo = service.criar(dto);
-        return ResponseEntity.status(HttpStatus.CREATED).body(novo);
+
+        URI location = ServletUriComponentsBuilder.fromCurrentRequest()
+                .path("/{id}")
+                .buildAndExpand(novo.getId())
+                .toUri();
+
+        return ResponseEntity.created(location).body(novo); // Use ResponseEntity.created(location)
     }
 
     @GetMapping

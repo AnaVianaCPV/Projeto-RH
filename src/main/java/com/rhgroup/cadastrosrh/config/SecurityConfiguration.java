@@ -15,17 +15,15 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity // Adicionar esta anotação pode ajudar o Spring a registrar o filtro
+@EnableWebSecurity
 public class SecurityConfiguration {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // 1. Desabilita CSRF de forma idiomática
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        // Permite acesso irrestrito para endpoints públicos
                         .requestMatchers(
                                 HttpMethod.POST, "/api/v1/candidatos"
                         ).permitAll()
@@ -34,17 +32,14 @@ public class SecurityConfiguration {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/h2-console/**",
-                                "/error" // Adicionar /error para tratamento de exceções
+                                "/error"
                         ).permitAll()
 
-                        // O restante exige autenticação
                         .anyRequest().authenticated()
                 )
 
-                // Abre Frame Options para o H2 Console
                 .headers(headers -> headers.frameOptions(HeadersConfigurer.FrameOptionsConfig::disable))
 
-                // Configuração básica HTTP
                 .httpBasic(Customizer.withDefaults());
 
         return http.build();

@@ -24,7 +24,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 
 @SpringBootTest(
-        classes = CadastrosRhApplication.class, // Declara a classe principal
+        classes = CadastrosRhApplication.class,
         webEnvironment = WebEnvironment.MOCK
 )
 @AutoConfigureMockMvc
